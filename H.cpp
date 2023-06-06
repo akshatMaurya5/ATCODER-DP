@@ -129,37 +129,72 @@ ll getSum(vector<T> v)
 
 /*******************************************************************************************************************************************************************************************************/
 
-ll dfs(ll i, ll j, set<pii>&st)
+ll n, m;
+
+ll dfs(vector<vector<char>> &v, ll i, ll j, vvi &dp)
 {
-    if(i==0 && j==0) return 1;
+    if (i == 0 && j == 0)
+    {
+        return 1;
+    }
+    if (i < 0 || j < 0 || v[i][j] == '#')
+        return 0;
+    if (dp[i][j] != -1)
+        return dp[i][j];
 
-    if(i<0 || j<0) return 0;
-    if(st.count({i, j})) return 0;
+    ll up = dfs(v, i - 1, j, dp);
+    ll left = dfs(v, i, j - 1, dp);
 
-    ll up = dfs(i-1, j, st);
-    ll left = dfs(i, j-1, st);
-    
-    ll ans = (left%mod + up%mod)%mod;
+    ll ways = (up % mod + left % mod) % mod;
 
-    return  ans;
+    return dp[i][j] = ways;
 }
 
 void solve()
 {
-    ll n, m, k;
-    cin>>n>>m>>k;
-
-    set<pii> st;
-    for(int i=0;i<k;i++)
+    cin >> n >> m;
+    vector<vector<char>> v(n, vector<char>(m));
+    cin >> v;
+    if (v[n - 1][m - 1] == '#')
     {
-        ll ii, j;
-        cin>>ii>>j;
-        st.insert({ii, j});
+        cout << 0 << line;
+        return;
+    }
+    // vvi dp(n, vi(m, -1));
+    // ll ans = dfs(v, n - 1, m - 1, dp);
+    // cout << ans << line;
+
+    ll dp[n][m];
+
+    //dp[i][j] = no. of ways to reach cell (i, j) from (0, 0)
+
+    dp[0][0]=1;
+
+    for(int i = 0; i < n; i++)
+    {
+        for(int j = 0; j < m; j++)
+        {
+            if(i==0 && j==0)
+            {
+                continue;
+            }
+            if(v[i][j]=='#'){
+                dp[i][j]=0;
+            }
+            else{
+                ll left = 0, up=0;
+
+                if(i-1>=0) up+=dp[i-1][j];
+                if(j-1>=0) left+=dp[i][j-1];
+
+                dp[i][j]=(up%mod+left%mod)%mod;
+            }
+        }
     }
 
-    ll ans = dfs(n-1, m-1, st);
+    cout<<dp[n-1][m-1]<<line;
 
-    cout<<ans<<line;
+
 }
 
 int main()

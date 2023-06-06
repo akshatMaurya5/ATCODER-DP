@@ -1,1 +1,5 @@
-D AND E NOT DONE
+D
+E
+G
+I
+J
